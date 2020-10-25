@@ -1,3 +1,5 @@
+import util
+
 class Cube:
     def __init__(self, state):
         self.IdealState = [["G", "G", "G", "G"],
@@ -37,7 +39,8 @@ class Cube:
             state[0][3] = state[0][1]
             state[0][1] = state[0][0]
             state[0][0] = square1
-        return self.misplacedCorners(state), state
+        # return self.misplacedCorners(state), state
+        return self.manhattanDistance(state), state
 
     def rotateBack(self, actual, times):
         state = []
@@ -65,7 +68,7 @@ class Cube:
         state[4][3] = state[4][1]
         state[4][1] = state[4][0]
         state[4][0] = square1
-        return self.misplacedCorners(state), state
+        return self.manhattanDistance(state), state
 
     def rotateLeft(self, actual, times):
         state = []
@@ -93,7 +96,7 @@ class Cube:
         state[1][3] = state[1][1]
         state[1][1] = state[1][0]
         state[1][0] = square1
-        return self.misplacedCorners(state), state
+        return self.manhattanDistance(state), state
         
     def rotateRight(self, actual, times):
         state = []
@@ -121,7 +124,7 @@ class Cube:
         state[3][3] = state[3][1]
         state[3][1] = state[3][0]
         state[3][0] = square1
-        return self.misplacedCorners(state), state
+        return self.manhattanDistance(state), state
 
     def rotateTop(self, actual, times):
         state = []
@@ -149,7 +152,7 @@ class Cube:
         state[2][3] = state[2][1]
         state[2][1] = state[2][0]
         state[2][0] = square1
-        return self.misplacedCorners(state), state
+        return self.manhattanDistance(state), state
         
     def rotateBottom(self, actual, times):
         state = []
@@ -177,45 +180,7 @@ class Cube:
         state[5][3] = state[5][1]
         state[5][1] = state[5][0]
         state[5][0] = square1
-        return self.misplacedCorners(state), state
-
-    # def rotateCube(self, move):
-    #     if(move == "Front 90"):
-    #         self.rotateFront(True, 1)
-    #     elif(move == "Front 180"):
-    #         self.rotateFront(True, 2)
-    #     elif(move == "Front 270"):
-    #         self.rotateFront(True, 3)
-    #     elif(move == "Back 90"):
-    #         self.rotateBack(True, 1)
-    #     elif(move == "Back 180"):
-    #         self.rotateBack(True, 2)
-    #     elif(move == "Back 270"):
-    #         self.rotateBack(True, 3)
-    #     elif(move == "Top 90"):
-    #         self.rotateTop(True, 1)
-    #     elif(move == "Top 180"):
-    #         self.rotateTop(True, 2)
-    #     elif(move == "Top 270"):
-    #         self.rotateTop(True, 3)
-    #     elif(move == "Bottom 90"):
-    #         self.rotateBottom(True, 1)
-    #     elif(move == "Bottom 180"):
-    #         self.rotateBottom(True, 2)
-    #     elif(move == "Bottom 270"):
-    #         self.rotateBottom(True, 3)
-    #     elif(move == "Left 90"):
-    #         self.rotateLeft(True, 1)
-    #     elif(move == "Left 180"):
-    #         self.rotateLeft(True, 2)
-    #     elif(move == "Left 270"):
-    #         self.rotateLeft(True, 3)
-    #     elif(move == "Right 90"):
-    #         self.rotateRight(True, 1)
-    #     elif(move == "Right 180"):
-    #         self.rotateRight(True, 2)
-    #     elif(move == "Right 270"):
-    #         self.rotateRight(True, 3)
+        return self.manhattanDistance(state), state
 
     def printCube(self):
         print ("")
@@ -237,7 +202,8 @@ class Cube:
                     misplaced += 1
         return misplaced
 
-    def moves(self):
+    def moves(self, state):
+        self.state = state
         arr = []
         arr.append(("Front 90",self.rotateFront(False, 1)))
         arr.append(("Front 180",self.rotateFront(False, 2)))
@@ -264,39 +230,117 @@ class Cube:
         arr.append(("Right 270",self.rotateRight(False, 3)))
         arr.sort(key = lambda x: x[1][0])
 
-        # print(arr)
-        currentMisplaced = self.misplacedCorners(self.state)
-        for i in range(len(arr)):
-            if(arr[i][1][1] not in self.visited and arr[i][1][0] <= currentMisplaced+1):
-                self.visited += [arr[i][1][1]]
-                self.rotation += [arr[i][0]]
-                self.state = arr[i][1][1]
-                # self.rotateCube(arr[i][0])
-                break
-        self.printCube()
+        return arr
 
-    def isGoalState(self):
-        for i in range(len(self.state)):
-            for j in range(len(self.state[0])):
-                if(self.state[i][j] != self.IdealState[i][j]):
+        # currentMisplaced = self.misplacedCorners(self.state)
+        # broke = False
+        # for i in range(len(arr)):
+        #     if(arr[i][1][1] not in self.visited):
+        #         self.visited += [arr[i][1][1]]
+        #         self.rotation += [arr[i][0]]
+        #         self.state = arr[i][1][1]
+        #         broke = True
+        #         break
+        # if broke:
+        #     self.printCube()
+
+    def isGoalState(self, state):
+        
+        for i in range(len(state)):
+            for j in range(len(state[0])):
+                if(state[i][j] != self.IdealState[i][j]):
                     return False
         return True
 
-    def solve(self):
-        for i in range(1000):
-            if not self.isGoalState():
-                self.moves()
-            else:
-                print(self.rotation)
-                break
-        print(self.rotation)
+    def manhattanDistance(self, state):
+        # opposite = []
+        # same = []
+        # oppositeColors = ["B", "W", "R", "Y", "G", "O"]
+        # sameColors = ["G", "Y", "O", "W", "B", "R"]
+        # for i in range(6):
+        #     color1 = 0
+        #     color2 = 0
+        #     for j in range(4):
+        #         if(state[i][j] == oppositeColors[i]):
+        #             color1 += 1
+        #         if(state[i][j] == sameColors[i]):
+        #             color2 += 1
+        #     opposite.append(color1)
+        #     same.append(color2)
+        # manhattan = 0
+        # for i in range(6):
+        #     manhattan += 2*opposite[i]
+        #     manhattan += 4 - same[i] - opposite[i]
+        # return manhattan/4
+        # state = self.IdealState
+        cubes = [["G", "Y", "O"], ["G", "O", "W"], ["G", "Y", "R"], ["G", "W", "R"],
+                 ["B", "O", "Y"], ["B", "O", "W"], ["B", "Y", "R"], ["B", "W", "R"]]
+        
+        orientation = [[0,1,2], [0,2,1], [1,0,2], [1,2,0], [2,0,1], [2,1,0]]
+        idealCubesPosition = [0,1,2,3,4,5,6,7]
+        cubesPosition = [0,0,0,0,0,0,0,0]
+        for i in range(len(cubes)):
+            for j in range(len(orientation)):
+                if(state[0][1] == cubes[i][orientation[j][0]] and state[1][2] == cubes[i][orientation[j][1]] and state[2][0] == cubes[i][orientation[j][2]]):
+                    cubesPosition[0] = i
+                if(state[0][3] == cubes[i][orientation[j][0]] and state[2][2] == cubes[i][orientation[j][1]] and state[3][0] == cubes[i][orientation[j][2]]):
+                    cubesPosition[1] = i
+                if(state[0][0] == cubes[i][orientation[j][0]] and state[1][0] == cubes[i][orientation[j][1]] and state[5][1] == cubes[i][orientation[j][2]]):
+                    cubesPosition[2] = i
+                if(state[0][2] == cubes[i][orientation[j][0]] and state[3][2] == cubes[i][orientation[j][1]] and state[5][3] == cubes[i][orientation[j][2]]):
+                    cubesPosition[3] = i
+                
+                if(state[4][0] == cubes[i][orientation[j][0]] and state[2][1] == cubes[i][orientation[j][1]] and state[1][3] == cubes[i][orientation[j][2]]):
+                    cubesPosition[4] = i
+                if(state[4][1] == cubes[i][orientation[j][0]] and state[5][0] == cubes[i][orientation[j][1]] and state[1][1] == cubes[i][orientation[j][2]]):
+                    cubesPosition[6] = i
+                if(state[4][2] == cubes[i][orientation[j][0]] and state[2][3] == cubes[i][orientation[j][1]] and state[3][1] == cubes[i][orientation[j][2]]):
+                    cubesPosition[5] = i
+                if(state[4][3] == cubes[i][orientation[j][0]] and state[5][2] == cubes[i][orientation[j][1]] and state[3][3] == cubes[i][orientation[j][2]]):
+                    cubesPosition[7] = i
+        print(cubesPosition)
+        cubesMap = [[0,0,1],[0,1,1],[0,0,0],[0,1,0],[0,1,1],[1,1,1],[0,1,0],[1,1,0]]
+        manhattan = 0
+        for i in range(7):
+            a1 = cubesMap[idealCubesPosition[i]]
+            a2 = cubesMap[cubesPosition[i]]
+            manhattan += abs(a1[0]-a2[0]) + abs(a1[1]-a2[1]) + abs(a1[2]-a2[2])
+        # print((manhattan+0.0)/(4.0))
+        return (manhattan+0.0)/(4.0)
+                
 
-problem = [["R", "Y", "G", "B"],
-           ["G", "O", "B", "G"],
-           ["O", "R", "Y", "W"],
-           ["R", "R", "Y", "G"],
-           ["W", "W", "B", "O"],
-           ["B", "Y", "W", "O"]]
+    def solve(self):
+        que = util.Queue()
+        print(self.manhattanDistance(self.state))
+        que.push((self.state, 0, 0 + self.manhattanDistance(self.state), []))
+
+        answer = []
+        while(not que.isEmpty()):
+            state, depth, fn, directions = que.pop()
+            print(depth)
+            self.visited += [state]
+
+            if(self.isGoalState(state)):
+                answer = directions
+                print("Found")
+                break
+
+            arr = self.moves(state)
+            for i in range(len(arr)):
+                fn1 = depth + 1 + arr[i][1][0]
+                if(fn1 <= fn and arr[i][1][1] not in self.visited):
+                    que.push((arr[i][1][1], depth+1, fn1, directions + [arr[i][0]]))
+
+        print(answer)
+        self.printCube()
+        # print(self.rotation)
+
+problem = [["B", "O", "R", "W"],
+           ["Y", "W", "G", "W"],
+           ["Y", "B", "G", "R"],
+           ["O", "Y", "Y", "R"],
+           ["O", "G", "B", "W"],
+           ["R", "O", "B", "G"]]
 
 mas = Cube(problem)
 # mas.rotateBottom(False)
