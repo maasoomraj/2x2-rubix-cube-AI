@@ -1,0 +1,6 @@
+G,O,G,W
+R,Y,G,O
+Y,B,O,W
+B,R,O,R
+Y,R,B,B
+G,W,Y,W

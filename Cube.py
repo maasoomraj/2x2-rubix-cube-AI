@@ -1,18 +1,18 @@
 import util
 
 class Cube:
-    def __init__(self, state):
+    def __init__(self):
         self.IdealState = [["G", "G", "G", "G"],
                            ["Y", "Y", "Y", "Y"],
                            ["O", "O", "O", "O"],
                            ["W", "W", "W", "W"],
                            ["B", "B", "B", "B"],
                            ["R", "R", "R", "R"]]
-        self.state = state
         self.visited = []
         self.corners = [dict(),dict(),dict(),dict(),dict(),dict(),dict(),dict()]
         self.visitedCorners = [[],[],[],[],[],[],[],[]]
         
+    # Function for clockwise rotation of Front Face
     def rotateFront(self, currState, times):
         state = []
         for i in range(len(currState)):
@@ -39,6 +39,7 @@ class Cube:
             state[0][0] = square1
         return state
 
+    # Function for clockwise rotation of Back Face
     def rotateBack(self, currState, times):
         state = []
         for i in range(len(currState)):
@@ -65,6 +66,7 @@ class Cube:
             state[4][0] = square1
         return state
 
+    # Function for clockwise rotation of Left Face
     def rotateLeft(self, currState, times):
         state = []
         for i in range(len(currState)):
@@ -91,6 +93,7 @@ class Cube:
             state[1][0] = square1
         return state
         
+    # Function for clockwise rotation of Right Face
     def rotateRight(self, currState, times):
         state = []
         for i in range(len(currState)):
@@ -117,6 +120,7 @@ class Cube:
             state[3][0] = square1
         return state
 
+    # Function for clockwise rotation of Top Face
     def rotateTop(self, currState, times):
         state = []
         for i in range(len(currState)):
@@ -142,7 +146,8 @@ class Cube:
             state[2][1] = state[2][0]
             state[2][0] = square1
         return state
-        
+    
+    # Function for clockwise rotation of Bottom Face
     def rotateBottom(self, currState, times):
         state = []
         for i in range(len(currState)):
@@ -169,6 +174,7 @@ class Cube:
             state[5][0] = square1
         return state
 
+    # Function to print cube in a well manner
     def printCube(self, state):
         print ("")
         print (" "),(" "),(" "),(" "),state[1][0],state[1][1]
@@ -181,6 +187,10 @@ class Cube:
         print (" "),(" "),(" "),(" "),state[3][2],state[3][3]
         print ("")
 
+    # Anti-Clockwise rotation is 3 times clockwise rotation of face
+    # Half Rotation is 2 times clockwise rotation of face
+
+    # Function to rotate top face in all 3 ways
     def topRotation(self, state):
         arr = []
         arr.append(("Top 90",self.rotateTop(state, 1)))
@@ -188,6 +198,7 @@ class Cube:
         arr.append(("Top 270",self.rotateTop(state, 3)))
         return arr
 
+    # Function to rotate bottom face in all 3 ways
     def bottomRotation(self, state):
         arr = []
         arr.append(("Bottom 90",self.rotateBottom(state, 1)))
@@ -195,6 +206,7 @@ class Cube:
         arr.append(("Bottom 270",self.rotateBottom(state, 3)))
         return arr
 
+    # Function to rotate front face in all 3 ways
     def frontRotation(self, state):
         arr = []
         arr.append(("Front 90",self.rotateFront(state, 1)))
@@ -202,6 +214,7 @@ class Cube:
         arr.append(("Front 270",self.rotateFront(state, 3)))
         return arr
 
+    # Function to rotate back face in all 3 ways
     def backRotation(self, state):
         arr = []
         arr.append(("Back 90",self.rotateBack(state, 1)))
@@ -209,6 +222,7 @@ class Cube:
         arr.append(("Back 270",self.rotateBack(state, 3)))
         return arr
 
+    # Function to rotate left face in all 3 ways
     def leftRotation(self, state):
         arr = []
         arr.append(("Left 90",self.rotateLeft(state, 1)))
@@ -216,6 +230,7 @@ class Cube:
         arr.append(("Left 270",self.rotateLeft(state, 3)))
         return arr
 
+    # Function to rotate right face in all 3 ways
     def rightRotation(self, state):
         arr = []
         arr.append(("Right 90",self.rotateRight(state, 1)))
@@ -223,6 +238,8 @@ class Cube:
         arr.append(("Right 270",self.rotateRight(state, 3)))
         return arr
 
+    # Function to rotate a given state, in all 18 possible ways
+    # Returns a 3d array, where each item is a 2d array after rotation
     def moves(self, state):
         arr = []
         arr += self.topRotation(state)
@@ -232,9 +249,28 @@ class Cube:
         arr += self.leftRotation(state)
         arr += self.rightRotation(state)
         return arr
+
+    # Function to check if given state is a goal state or not
+    # return True if goal state, else return False
+    def isGoalState(self, state):
+        for i in range(len(state)):
+            for j in range(len(state[0])):
+                if(state[i][j] != self.IdealState[i][j]):
+                    return False
+        return True
+
+    ############################################################################################################################
+    ############################################################################################################################
+
+
+    # Given below is Code for not pre-computing, and finding number of moves to bring cube to ideal position
+    # during time of finding heuristic value
+    # This method is not implemented as it takes a lot of time, for testing purpose
     
+    # Function to make moves in 9 possible ways depending on cubes position
     # def heuristicMove(self, state, cube):
     #     arr = []
+    #     # Find cubes position
     #     cubesPosition = self.positionOfCube(state)[cube]
     #     if(cubesPosition == 0 or cubesPosition == 1 or cubesPosition == 2 or cubesPosition == 3):
     #         arr += self.frontRotation(state)
@@ -250,15 +286,8 @@ class Cube:
     #         arr += self.rightRotation(state)
     #     # print(len(arr))
     #     return arr
-        
 
-    def isGoalState(self, state):
-        for i in range(len(state)):
-            for j in range(len(state[0])):
-                if(state[i][j] != self.IdealState[i][j]):
-                    return False
-        return True
-
+    # Function to find position of all 8 Cubes in given state
     # def positionOfCube(self, state):
     #     cubes = [["G", "Y", "O"], ["G", "O", "W"], ["G", "Y", "R"], ["G", "W", "R"],
     #              ["B", "O", "Y"], ["B", "O", "W"], ["B", "Y", "R"], ["B", "W", "R"]]
@@ -295,6 +324,7 @@ class Cube:
     #     # return (manhattan+0.0)/(4.0)
     #     return cubesPosition  
     
+    # Heuristic function when we are not pre computing number of moves
     # def heuristic(self, currState):
     #     cubesNumber = [[[0,1],[1,2],[2,0]],[[0,3],[2,2],[3,0]],[[0,0],[1,0],[5,1]],[[0,2],[3,2],[5,3]],
     #                    [[4,0],[2,1],[1,3]],[[4,1],[5,0],[1,1]],[[4,2],[2,3],[3,1]],[[4,3],[5,2],[3,3]]]
@@ -327,8 +357,15 @@ class Cube:
     #     # print("Heuristic", answer)
     #     return (answer+0.0)/(4.0)
 
+
+    ############################################################################################################################
+    ############################################################################################################################
+
+    # Since, we want less computation for this project, we have made an assumption that
+    # If number of moves to bring a cube to particular position is more than 4, we will consider it any high number say 11
     def heuristicFunction(self, state):
         value = 0
+        # Stores cubes
         cube0 = [state[0][1], state[1][2], state[2][0]]
         cube1 = [state[0][3], state[2][2], state[3][0]]
         cube2 = [state[0][0], state[1][0], state[5][1]]
@@ -339,6 +376,7 @@ class Cube:
         cube7 = [state[4][3], state[5][3], state[3][3]]
         arr = []
         arr1 = []
+        # Convert list to str, to search in dictionary
         arr.append(' '.join(map(str, cube0)))
         arr.append(' '.join(map(str, cube1)))
         arr.append(' '.join(map(str, cube2)))
@@ -358,13 +396,17 @@ class Cube:
 
         for i in range(len(arr)):
             if(arr1[i] in self.visitedCorners[i]):
+                # print(self.corners[i][arr[i]])
                 value += self.corners[i][arr[i]]
             else:
+                # print(11)
                 value += 11
-        # print((value+0.0)/4.0)
+
+        # returns heuristic value / 4
         return (value+0.0)/4.0
 
-
+    # Function to fill visited corners and orientation of corner
+    # Function which create dictionary for number of moves to reach ideal position for a cube
     def mapCorner(self, state, directions):
         l = len(directions)
 
@@ -372,7 +414,6 @@ class Cube:
         if(cube0 not in self.visitedCorners[0]):
             self.visitedCorners[0] += [cube0]
             self.corners[0][' '.join(map(str, cube0))] = l
-            # self.corners.append((cube0, l))
         cube1 = [state[0][3], state[2][2], state[3][0]]
         if(cube1 not in self.visitedCorners[1]):
             self.visitedCorners[1] += [cube1]
@@ -402,20 +443,21 @@ class Cube:
             self.visitedCorners[7] += [cube7]
             self.corners[7][' '.join(map(str, cube7))] = l
 
-    def preSolve(self, state):
+    # A simple DFS run , to pre compute values for heuristic function
+    def preSolve(self):
         print("Pre computation before solving Rubix Cube ...")
-        que = util.Queue()
-        que.push((state, 0, []))
+        que = util.Stack()
+        que.push((self.IdealState, 0, []))
         visited = []
-        answer = []
         while(not que.isEmpty()):
             state, depth, directions = que.pop()
-            print(len(visited))
             visited += [state]
 
             self.mapCorner(state, directions)
 
-            if(depth == 5):
+            # Since, the computation will be very high, but this will be one time computation only
+            # I have run BFS till depth 4
+            if(depth == 3):
                 break
 
             arr = self.moves(state)
@@ -423,77 +465,79 @@ class Cube:
                 if(arr[i][1] not in visited):
                     que.push((arr[i][1], depth+1,  directions + [arr[i][0]]))
         print("Pre computation done, to faster solving rubix cube ... !")
-        # print(self.corners)
 
-    def solve(self):
-        print("Started Solving Rubix Cube ...")
-        self.preSolve(self.state)
-        self.printCube(self.state)
+    def dfs(self, d, state):
+        # DFS till depth d, as DFS requires less space
+        # BFS promises optimal solution
+        # Iterative Deepening DFS requires less space and promises optimal solution
 
-        # que = util.Queue()
-        que = util.PriorityQueue()
-        fOfN = self.heuristicFunction(self.state),
-        que.push((self.state, 0, fOfN, []), fOfN)
-        # que.push((self.state, 0, fOfN, []))
+        # answer array initialised to []
         answer = []
+        
+        # Stack for implementing DFS
+        que = util.Stack()
+        # Calculating fOfN for starting state
+        fOfN = self.heuristicFunction(state),
+        que.push((state, 0, fOfN, []))
+        # Visited array initialised to []
+        visited = []
         while(not que.isEmpty()):
             state, depth, fn, directions = que.pop()
-            # print(len(self.visited))
-            self.visited += [state]
+            # Push node in visited array
+            visited += [state]
 
-            if(len(self.visited) > 25000):
-                print("Too much computation required")
-                break
-
+            # check for goal state
             if(self.isGoalState(state)):
                 answer = directions
                 break
 
+            # obtain list of 2d array, where each 2d array is state after rotation
             arr = self.moves(state)
             for i in range(len(arr)):
-                hn = self.heuristicFunction(arr[i][1])
-                fn1 = depth + 1 + hn
-                if(fn1 <= fn and arr[i][1] not in self.visited):
-                    # que.push((arr[i][1], depth+1, fn1, directions + [arr[i][0]]))
-                    que.push((arr[i][1], depth+1, fn1, directions + [arr[i][0]]), fn1)
+                # If depth is less than equal to desired DFS depth
+                # If this state is not previously visited
+                if(depth + 1 <= d and arr[i][1] not in visited):
+                    # find heuristic value
+                    hn = self.heuristicFunction(arr[i][1])
+                    # f(n) = g(n) + h(n)
+                    fn1 = (depth + 1) + hn
+                    if(fn1 < fn):
+                        que.push((arr[i][1], depth+1, fn1, directions + [arr[i][0]]))
+                        # que.push((arr[i][1], depth+1, fn1, directions + [arr[i][0]]), fn1)
+        return answer
+
+    # Main function which solves the rubix cube
+    def solve(self, state):
+        print("Started Solving Rubix Cube ...")
+        # Pre-Computation
+        self.preSolve()
+        answer = []
+        for d in range(10):
+            answer = self.dfs(d, state)
+            if(len(answer) > 0):
+                break
         print("Successfully Solved")
-        # # print(len(self.visited))
         print(answer)
 
-problem = [["G", "G", "G", "G"],
-           ["R", "O", "R", "O"],
-           ["Y", "W", "Y", "W"],
-           ["O", "R", "O", "R"],
-           ["B", "B", "B", "B"],
-           ["Y", "W", "Y", "W"]]
+problem = []
+with open('input.txt') as f:
+    for line in f:
+        inner_list = [elt.strip() for elt in line.split(',')]
+        problem.append(inner_list)
 
-mas = Cube(problem)
-# mas.printCube(mas.rotateFront(problem, 2))
-# mas.solve()
-# print(mas.rotateFront(True, 2))
-# mas.printCube()
+rubix = Cube()
+rubix.solve(problem)
 
-print(mas.heuristicFunction(problem))
-cube1 = mas.rotateBack(problem, 3)
-print(mas.heuristicFunction(cube1))
-cube2 = mas.rotateFront(cube1, 3)
-print(mas.heuristicFunction(cube2))
-# cube3 = mas.rotateTop(cube2, 1)
-mas.printCube(cube2)
+# G,G,G,G
+# R,O,R,O
+# Y,W,Y,W
+# O,R,O,R
+# B,B,B,B
+# Y,W,Y,W
 
-# cube1 = mas.rotateFront(cube3, 2)
-# cube2 = mas.rotateRight(cube1, 1)
-# cube3 = mas.rotateTop(cube2, 1)
-# mas.printCube(cube3)
-
-# cube1 = mas.rotateFront(cube3, 2)
-# cube2 = mas.rotateRight(cube1, 1)
-# cube3 = mas.rotateTop(cube2, 1)
-# mas.printCube(cube3)
-
-# cube4 = mas.rotateLeft(cube3, 3)
-# cube5 = mas.rotateTop(cube4, 1)
-# cube6 = mas.rotateRight(cube5, 3)
-# cube7 = mas.rotateTop(cube6, 3)
-# cube8 = mas.rotateLeft(cube7, 1)
-# mas.printCube(cube8)
+# G,O,G,W
+# R,Y,G,O
+# Y,B,O,W
+# B,R,O,R
+# Y,R,B,B
+# G,W,Y,W
